@@ -7,14 +7,6 @@ class COutLook{
 	function getMessages($folder){
 		//Setup the folder table,.there is 4 elements:
 
-		//message number,message subject ,message type and date received
-		echo"<body text=darkblue>
-		<br><font color=red face=verdana size=3><b>$folder</b></font>
-		<table width=100%>
-		<TR bgcolor=#EEEFFF><td><font face=verdana size=2>N:</td><td>
-		<font face=verdana size=2> Subject</td><TD>
-		<font face=verdana size=2 >Type</TD><TD><font face=verdana size=2> Date</TD></TR>";
-
 		//creating the COM instance for Outlook.application and MAPI session(access the outlook folders object)
 		$oOutlook = new COM("Outlook.Application");
 		//$session= new COM("MAPI.Session") or die('cannot open mapi session');
@@ -33,21 +25,75 @@ class COutLook{
  			$inb = $session->GetDefaultFolder(4);	
  		}
 
-		//get the total messages in Folder
+ 		//get the total messages in Folder
 		$messages=$inb->Items->Count();
 
 		//get the elements of the message object
 		//check custom folders 
 		$customFolder = $inb->Folders;
 		$count =  $customFolder->Count();
-		$name =  $inb->Folders(12);
-
-		var_dump($count,$name->Name());
+		//$name =  $inb->Folders(12);
+		
 
 		for ($i = 1; $i <= $count; $i++) {
 			$custom = $inb->Folders($i);
-			var_dump($custom->Name(), $custom->Items->Count());
+			echo "<b>Folder Name : </b>". $custom->Name() ."<p>Count :".$custom->Items->Count()."</p>";
+			//var_dump($custom->Name(), $custom->Items->Count());
+			$subCount = $custom->Items->Count();
+			//message number,message subject ,message type and date received
+			echo"<body text=darkblue>
+			<br><font color=red face=verdana size=3><b>$custom->Name</b></font>
+			<table width=100%>
+			<TR bgcolor=#EEEFFF><td><font face=verdana size=2>N:</td><td>
+			<font face=verdana size=2> Subject</td><TD>
+			<font face=verdana size=2 >Type</TD><TD><font face=verdana size=2> Date</TD></TR>";
+			for($k=1;$k<= ($subCount);$k++){
+				$item=$custom->Items($k);
+				//date string
+				$timeres= $item->ReceivedTime;
+
+				//$date_vb=getdate($timeres);
+				//date elements
+				//$year=$date_vb['year'];
+				//$month=$date_vb['mon'];
+				//$day=$date_vb['mday'];
+				//entering the folder elements
+				//$item->ConversationIndex.'//'.$item->ConversationId
+				$attachments = $item->Attachments;
+				echo "<tr bgcolor=#F0F0F0><td><font face=verdana size=2 color=darkblue>$attachments->Count";
+				if($attachments->Count > 0) {
+					for ($j=1; $j < $attachments->Count; $j++ ) {
+						$attachment = $item->Attachments($j);
+						$pattern = '/.*?ics|.*?vcf/';
+						if(preg_match($pattern, $attachment->FileName, $matches, PREG_OFFSET_CAPTURE)) {
+							try {
+								echo $attachment->FileName.'//'.$attachment->Size.'//'.$attachment->Type.'<br>';
+								//$attachment->SaveAsFile('C:/attachment/'.$attachment->FileName);	
+							} catch (Exception $e) {
+								echo $e->getMessage();
+							}
+							
+						}
+						
+					}
+				}
+				echo "</td>
+				<td><font face=verdana size=2 color=darkblue><a href=view.php?id=$i&folder=$folder target=bottomFrame><font face=verdana size=2 color=#FF6666>$item->Subject</font></td>
+				<td><font face=verdana size=2 color=darkblue>$item->SenderEmailType</td>
+				<td><font face=verdana size=1 color=darkblue>$timeres</td>
+				<td><font face=verdana size=1 color=darkblue></td></font><tr>";
+			}
+			echo"</table>";
 		}
+
+
+		//message number,message subject ,message type and date received
+		echo"<body text=darkblue>
+		<br><font color=red face=verdana size=3><b>$folder</b></font>
+		<table width=100%>
+		<TR bgcolor=#EEEFFF><td><font face=verdana size=2>N:</td><td>
+		<font face=verdana size=2> Subject</td><TD>
+		<font face=verdana size=2 >Type</TD><TD><font face=verdana size=2> Date</TD></TR>";
 
 		for($i=1;$i<($messages+1);$i++){
 			$item=$inb->Items($i);
@@ -66,11 +112,11 @@ class COutLook{
 			if($attachments->Count > 0) {
 				for ($j=1; $j < $attachments->Count; $j++ ) {
 					$attachment = $item->Attachments($j);
-					echo $attachment->FileName.'//'.$attachment->Size.'//'.$attachment->Type.'<br>';
 					$pattern = '/.*?ics|.*?vcf/';
 					if(preg_match($pattern, $attachment->FileName, $matches, PREG_OFFSET_CAPTURE)) {
 						try {
-							$attachment->SaveAsFile('C:/attachment/'.$attachment->FileName);	
+							echo $attachment->FileName.'//'.$attachment->Size.'//'.$attachment->Type.'<br>';
+							//$attachment->SaveAsFile('C:/attachment/'.$attachment->FileName);	
 						} catch (Exception $e) {
 							echo $e->getMessage();
 						}
@@ -190,6 +236,10 @@ class COutLook{
 		return $UnreadMessagesInFolder;
 
 
+
+	}
+
+	function getMessageFromFolder($folder) {
 
 	}
 

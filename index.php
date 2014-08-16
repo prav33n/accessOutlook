@@ -1,10 +1,10 @@
 <?PHP
 	//previous class
 	set_time_limit (0);
-	require("COutLook.php");
+	require("OutLook.php");
 	//make new instance of the class
 
-	$class= new COutLook;
+	$class= new OutLook;
 
 	if ($folder==""){
 		//$class->getMessages('test');

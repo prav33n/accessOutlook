@@ -13,3 +13,6 @@ Disable any antivirus sotware, if norton is running, blocks the access and diabl
 
 //mail item properties 
 http://msdn.microsoft.com/en-us/library/office/ff870913(v=office.14).aspx
+
+API reference for 2010
+http://www.microsoft.com/en-us/download/details.aspx?id=3258
