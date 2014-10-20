@@ -45,10 +45,13 @@ class OutLook{
 			$custom = $inb->Folders($i);
 			//echo "<b>Folder Name : </b>". $custom->Name() ."<p>Count :".$custom->Items->Count()."</p>";
 			if(isset($fromDate) && isset($toDate)) {
-				echo 'filter set';
+				//echo 'filter set <br>';
 				$this->getMessageFromFolder($custom, $i, $fromDate, $toDate);
+			}else if (isset($fromDate)) {
+				//echo 'filter set to today <br>';
+				$this->getMessageFromFolder($custom, $i, $fromDate, time());
 			} else {
-				echo 'filter not set';
+				//echo 'filter not set <br>';
 				$this->getMessageFromFolder($custom, $i);	
 			}
 			
@@ -103,10 +106,9 @@ class OutLook{
 		
 		$session= $oOutlook->GetNamespace("MAPI");
 
-
 		//Log into the session like default user 
 		$session->Logon();
-
+		
 		$myFolder = $session->GetDefaultFolder(10);
  		
  		echo ('Contacts count '.$myFolder->Items->Count. '<br>');
@@ -120,12 +122,14 @@ class OutLook{
 			$myItem = $myFolder->Items($i); 
 			try {
 				//get the elements of the message object
+				var_dump($myItem->Body);
+				
 				$contactObject->emailAddress = mysql_escape_string($myItem->Email1Address);
 				$contactObject->secondaryEmail = mysql_escape_string($myItem->Email2Address);
 				$contactObject->name = mysql_escape_string($myItem->FullName);
-				$contactObject->phone = mysql_escape_string($myItem->PrimaryTelephoneNumber);
+				$contactObject->phone = mysql_escape_string($myItem->BusinessTelephoneNumber);
+
 			    $sql = 'INSERT INTO `contacts`(`name`, `primaryemail`, `secondaryemail`, `phonenumber`) VALUES (\''.$contactObject->name.'\',\''.$contactObject->emailAddress.'\',\''.$contactObject->secondaryEmail.'\',\''.$contactObject->phone.'\')';
-			    var_dump($sql);
 			    $this->db->db_query($sql) or die ('Insertion error');
 			   	//break;
 			} catch (Exception $e) {
@@ -166,55 +170,66 @@ class OutLook{
 			//date string
 			$timeres=$item->ReceivedTime;
 
-			$emailObject->senderName =  htmlspecialchars ($item->SenderName,ENT_QUOTES,'UTF-8',true);
-			$emailObject->senderEmail = htmlspecialchars ($item->SenderEmailAddress,ENT_QUOTES,'UTF-8',true);
-			$emailObject->cc = htmlspecialchars ($item->Cc,ENT_QUOTES,'UTF-8',true);
-			$emailObject->bcc = htmlspecialchars ($item->Bcc,ENT_QUOTES,'UTF-8',true);
-			//$htmlEncode = htmlspecialchars ($item->Subject,ENT_QUOTES,'UTF-8',true);
-			$emailObject->subject = htmlspecialchars ($item->Subject,ENT_QUOTES,'UTF-8',true);
-			//$htmlEncode = htmlentities($item->HTMLBody,ENT_QUOTES,'UTF-8',true);
-			$htmlEncode = htmlspecialchars ($item->Body,ENT_QUOTES,'UTF-8',true);
-			//$htmlEncode = preg_replace('/\'/', ' ', $htmlEncode);
-			$emailObject->html_content = $htmlEncode;
-			$emailObject->folderId = $id;
-			$emailObject->folderName = $name;
-			$emailObject->timestamp = strtotime($timeres);
-			//mysql_real_escape_string($emailObject->html_content)
-			//$emailObject->html_content = str_replace('\'',"\"",$emailObject->html_content);
+			try {
+			    $emailObject->senderName =  htmlspecialchars ($item->SenderName,ENT_QUOTES,'UTF-8',true);
+				$emailObject->senderEmail = htmlspecialchars ($item->SenderEmailAddress,ENT_QUOTES,'UTF-8',true);
+				$emailObject->cc = method_exists($item, 'Cc') ? htmlspecialchars ($item->Cc,ENT_QUOTES,'UTF-8',true) : 'no cc' ;
+				$emailObject->bcc = method_exists($item, 'Bcc') ? htmlspecialchars ($item->Bcc,ENT_QUOTES,'UTF-8',true) : 'no cc';
+				//$htmlEncode = htmlspecialchars ($item->Subject,ENT_QUOTES,'UTF-8',true);
+				$emailObject->subject = htmlspecialchars ($item->Subject,ENT_QUOTES,'UTF-8',true);
+				$htmlEncode = method_exists($item, 'HTMLBody') && $item->HTMLBody() !== "" ? $item->HTMLBody() : (method_exists($item, 'Body') ? $item->Body() : 'no body text');
+				//$htmlEncode = preg_replace('/\'/', ' ', $htmlEncode);
 
-			$attachments = $item->Attachments;
-			if($attachments->Count > 0) {
-				for ($j=1; $j < $attachments->Count; $j++ ) {
-					$attachment = $item->Attachments($j);
-					$pattern = '/.*?ics|.*?vcf/';
-					if(preg_match($pattern, $attachment->FileName, $matches, PREG_OFFSET_CAPTURE)) {
-						try {
-							//echo $attachment->FileName.'//'.$attachment->Size.'//'.$attachment->Type.'<br>';
-							$emailObject->attachment = 'C:/attachment/'.$attachment->FileName;
-							$attachment->SaveAsFile($emailObject->attachment);
+				$emailObject->html_content = mysql_escape_string($htmlEncode);
+				$emailObject->folderId = $id;
+				$emailObject->folderName = $name;
+				$emailObject->timestamp = strtotime($timeres);
 
-						} catch (Exception $e) {
-							echo $e->getMessage();
+				//echo $emailObject->senderEmail;
+				//echo $emailObject->html_content; 
+				//mysql_real_escape_string($emailObject->html_content)
+				//$emailObject->html_content = str_replace('\'',"\"",$emailObject->html_content);
+
+				$attachments = $item->Attachments;
+				if($attachments->Count > 0) {
+					for ($j=1; $j < $attachments->Count; $j++ ) {
+						$attachment = $item->Attachments($j);
+						$pattern = '/.*?ics|.*?vcf/';
+						
+						if(preg_match($pattern, $attachment->FileName, $matches, PREG_OFFSET_CAPTURE)) {
+							try {
+								//echo $attachment->FileName.'//'.$attachment->Size.'//'.$attachment->Type.'<br>';
+								$emailObject->attachment = getcwd().'/attachment/'.$attachment->FileName;
+								echo "attachment found ".$emailObject->attachment;
+								$attachment->SaveAsFile($emailObject->attachment);
+							} catch (Exception $e) {
+								echo $e->getMessage();
+							}
 						}
+						
 					}
-					
 				}
-			}
 
-			if(isset($fromDate) && isset($toDate)) {
-				if($timeres >= $fromDate && $timeres <= $toDate) {
+				if(isset($fromDate) && isset($toDate)) {
+					if($timeres >= $fromDate && $timeres <= $toDate) {
+						$sql = 'INSERT INTO `outlook`.`email` (`senderName`, `senderEmail`, `cc`, `bcc`, `subject`, `html_content`, `folderid`, `foldername`, `timestamp`) 
+						VALUES (\''.$emailObject->senderName.'\',\''.$emailObject->senderEmail.'\',\''.$emailObject->cc.'\',\''.$emailObject->bcc.'\',\''.$emailObject->subject.'\',\''.$emailObject->html_content.'\',\''.$emailObject->folderId.'\',\''. $emailObject->folderName.'\','.$emailObject->timestamp.')';
+						$this->db->db_query($sql) or die ('Insertion error');
+					} else {
+						echo 'mail received outside  the date limit';
+					}
+				}  else {
 					$sql = 'INSERT INTO `outlook`.`email` (`senderName`, `senderEmail`, `cc`, `bcc`, `subject`, `html_content`, `folderid`, `foldername`, `timestamp`) 
 					VALUES (\''.$emailObject->senderName.'\',\''.$emailObject->senderEmail.'\',\''.$emailObject->cc.'\',\''.$emailObject->bcc.'\',\''.$emailObject->subject.'\',\''.$emailObject->html_content.'\',\''.$emailObject->folderId.'\',\''. $emailObject->folderName.'\','.$emailObject->timestamp.')';
+					//var_dump($sql);
+					//echo '<br>';
 					$this->db->db_query($sql) or die ('Insertion error');
-				} else {
-					echo 'mail received outside  the date limit';
+					//break;
 				}
-			}  else {
-				$sql = 'INSERT INTO `outlook`.`email` (`senderName`, `senderEmail`, `cc`, `bcc`, `subject`, `html_content`, `folderid`, `foldername`, `timestamp`) 
-				VALUES (\''.$emailObject->senderName.'\',\''.$emailObject->senderEmail.'\',\''.$emailObject->cc.'\',\''.$emailObject->bcc.'\',\''.$emailObject->subject.'\',\''.$emailObject->html_content.'\',\''.$emailObject->folderId.'\',\''. $emailObject->folderName.'\','.$emailObject->timestamp.')';
-				//var_dump($sql);
-				//echo '<br>';
-				$this->db->db_query($sql) or die ('Insertion error');
+			 }
+			catch (Exception $e) {
+			    // handle or ignore exception here. 
+			    echo 'record fetch error';
 			}
 			//break;
 		}

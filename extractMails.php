@@ -15,11 +15,14 @@ function BuildDBSkeleton () {
 }
 
 function ExtractEmailInbox ($dbcreateflag) {
+	echo 'Loading mail to database, Please wait....';
+	sleep(1);
 	if (true)
 		BuildDBSkeleton ();
 	$class = new OutLook;
-	$class->getMessages('Inbox', 1403710000, 1403800000);
+	$class->getMessages('Inbox');
 	$class->getContacts();
+	echo 'Loading complete.';
 }
 
 function main() {

@@ -1,7 +1,9 @@
 <?PHP
 	//previous class
+	echo phpinfo();
 	set_time_limit (0);
-	require("OutLook.php");
+	echo '<font face=verdana size=2 color=darkblue><a href=extractMails.php target=bottomFrame><font face=verdana size=2 color=#FF6666>$item->Subject</font>'
+	/*require("OutLook.php");
 	//make new instance of the class
 
 	$class= new OutLook;
@@ -18,5 +20,5 @@
 		$class->getMessages('Inbox');
 		$class->getMessages('Outbox');
 	}
-
+*/
 ?>
