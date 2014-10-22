@@ -8,7 +8,7 @@ class OutLook{
 	public function __construct()
     { 
        $this->db = new db;
-       var_dump($this->db);
+       //var_dump($this->db);
     }
 
 	function getMessages($folder,$fromDate,$toDate){
@@ -17,7 +17,7 @@ class OutLook{
 		//creating the COM instance for Outlook.application and MAPI session(access the outlook folders object)
 		$oOutlook = new COM("Outlook.Application");
 		//$session= new COM("MAPI.Session") or die('cannot open mapi session');
-		echo $oOutlook->Version;
+		//echo $oOutlook->Version;
 		
 		$session= $oOutlook->GetNamespace("MAPI");
 
@@ -111,7 +111,7 @@ class OutLook{
 		
 		$myFolder = $session->GetDefaultFolder(10);
  		
- 		echo ('Contacts count '.$myFolder->Items->Count. '<br>');
+ 		//echo ('Contacts count '.$myFolder->Items->Count. '<br>');
  		
  		//get the total messages in Folder
 		$contactCount = $myFolder->Items->Count();
@@ -122,7 +122,7 @@ class OutLook{
 			$myItem = $myFolder->Items($i); 
 			try {
 				//get the elements of the message object
-				var_dump($myItem->Body);
+				//var_dump($myItem->Body);
 				
 				$contactObject->emailAddress = mysql_escape_string($myItem->Email1Address);
 				$contactObject->secondaryEmail = mysql_escape_string($myItem->Email2Address);
@@ -131,9 +131,9 @@ class OutLook{
 
 			    $sql = 'INSERT INTO `contacts`(`name`, `primaryemail`, `secondaryemail`, `phonenumber`) VALUES (\''.$contactObject->name.'\',\''.$contactObject->emailAddress.'\',\''.$contactObject->secondaryEmail.'\',\''.$contactObject->phone.'\')';
 			    $this->db->db_query($sql) or die ('Insertion error');
-			   	//break;
+			   	break;
 			} catch (Exception $e) {
-			    echo 'Caught exception: ',  $e->getMessage(), "\n";
+			    //echo 'Caught exception: ',  $e->getMessage(), "\n";
 			}
 			
  		}
@@ -203,7 +203,7 @@ class OutLook{
 								echo "attachment found ".$emailObject->attachment;
 								$attachment->SaveAsFile($emailObject->attachment);
 							} catch (Exception $e) {
-								echo $e->getMessage();
+								//echo $e->getMessage();
 							}
 						}
 						
@@ -229,7 +229,7 @@ class OutLook{
 			 }
 			catch (Exception $e) {
 			    // handle or ignore exception here. 
-			    echo 'record fetch error';
+			    //echo 'record fetch error';
 			}
 			//break;
 		}

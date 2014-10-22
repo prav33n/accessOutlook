@@ -11,6 +11,7 @@ require("db.php");
 
 function BuildDBSkeleton () {
 	$db = new db;
+	var_dump($db)
 	$db->db_schema_setup();
 }
 

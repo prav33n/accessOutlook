@@ -25,29 +25,33 @@
     http://openenergymonitor.org
 
     */
-    
-    $GLOBALS['server']    = "localhost";  // host on which mysql server works
-    $GLOBALS['username']    = "root";   // user we use to connect to server
-    $GLOBALS['password']  = "titans"; // password of the connected user
-    $GLOBALS['database']  = "outLook";
 
 class db {
 
+    public $connectStatus;  
     public function __construct()
     { 
 
-        global $mysqli, $server, $username, $password, $database;
+      global $mysqli, $server, $username, $password, $database;
       // ERROR CODES
       // 1: success!
       // 3: database settings are wrong 
       // 4: launch setup.php
-   
+      $settings  = parse_ini_file('config.php', true);
+      $GLOBALS['server']    = $settings['database']['host'];  // host on which mysql server works
+      $GLOBALS['username']    = $settings['database']['user'];   // user we use to connect to server
+      $GLOBALS['password']  =  $settings['database']['pass']; // password of the connected user
+      $GLOBALS['database']  = $settings['database']['name'];
+
       // Lets try to connect
       $mysqli = new mysqli($server, $username, $password, $database);
-
-      if ($mysqli->connect_error) 
-        return 3;
-      else
+      //var_dump($mysqli->connect_errno);
+      if ($mysqli->connect_errno > 0) 
+        $this->connectStatus = false;
+      else {
+        $this->connectStatus = true;
+      }
+      /*else
       {
         $result = $this->db_query("SELECT count(table_schema) from information_schema.tables WHERE table_schema = '$database'");
         $row = $this->db_fetch_array($result);
@@ -57,7 +61,7 @@ class db {
         else
           return 4;
 
-      }
+      }*/
     }
 
   function db_query($query)
