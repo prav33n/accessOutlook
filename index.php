@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <?php
 	//previous class
 	set_time_limit (0);
@@ -5,12 +6,15 @@
 	require("OutLook.php");
 	require("db.php");
 ?>
-
-<html>
+<html lang="en">
   <head>
-    <title>"Outlook setup"</title>
+    <title>Outlook setup</title>
+    <!-- Loading Flat UI -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/flat-ui.css" rel="stylesheet">
+    <link href="css/outlook.css" rel="stylesheet">
   </head>
-  <body bgcolor=white>
+  <body>
   	<?php
   		if(count($_POST)>0) {
   			//var_dump($_POST);
@@ -36,18 +40,18 @@
   			&& $settings['database']['host'] == '' 
   			&& $settings['database']['user'] == '' 
   			&& $settings['database']['pass'] == '') {
-  			echo '<form action="index.php" method="post">
-				 Database Name:<input type="text" name="name"><p><br>
-				 Host: <input type="text" name="host" text="localhost"><p><br> 
-				 UserName: <input type="text" name="user"><p><br>
-				 Password: <input type="text" name="pass"><p><br>
-				 <input type="submit" name="submit" value="Save">
-				 </form>';
+  			echo '<div class = "formContainer"><form action="index.php" method="post" role="form" class="form-horizontal" >
+				 <div class="form-group"><h6 class="col-sm-2">Database Name:</h6><input class="col-sm-4" type="text" name="name"><p></div>
+				 <div class="form-group"><h6 class="col-sm-2">Host:</h6> <input class="col-sm-4" type="text" name="host" text="localhost"><p></div> 
+				 <div class="form-group"><h6 class="col-sm-2">UserName:</h6> <input class="col-sm-4" type="text" name="user"><p></div>
+				 <div class="form-group"><h6 class="col-sm-2">Password:</h6> <input class="col-sm-4" type="text" name="pass"><p></div>
+				 <input class="btn btn-lg btn-primary" type="submit" name="submit" value="Save">
+				 </form></div>';
   		} else {
-  			echo '<form action="index.php" method="post">
-				 <input type="submit" name="submit" value="Delete">
-				 <input type="submit" name="submit" value="Extract Mails">
-				 </form>';
+  			echo '<div class = "formContainer"><form action="index.php" method="post" role="form" class="form-horizontal">
+				 <div><input class= "btn btn-lg btn-danger" type="submit" name="submit" value="Delete"/>
+				 <input class= "btn btn-lg btn-success" type="submit" name="submit" value="Extract Mails"/></div>
+				 </form></div>';
   		}
 		
 
