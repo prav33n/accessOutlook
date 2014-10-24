@@ -36,24 +36,25 @@
   		}
 
   		$settings  = parse_ini_file('config.php', true);
-  		if($settings['database']['name'] == '' 
-  			&& $settings['database']['host'] == '' 
-  			&& $settings['database']['user'] == '' 
+  		if($settings['database']['name'] == ''
+  			&& $settings['database']['host'] == ''
+  			&& $settings['database']['user'] == ''
   			&& $settings['database']['pass'] == '') {
   			echo '<div class = "formContainer"><form action="index.php" method="post" role="form" class="form-horizontal" >
 				 <div class="form-group"><h6 class="col-sm-2">Database Name:</h6><input class="col-sm-4" type="text" name="name"><p></div>
-				 <div class="form-group"><h6 class="col-sm-2">Host:</h6> <input class="col-sm-4" type="text" name="host" text="localhost"><p></div> 
+				 <div class="form-group"><h6 class="col-sm-2">Host:</h6> <input class="col-sm-4" type="text" name="host" text="localhost"><p></div>
 				 <div class="form-group"><h6 class="col-sm-2">UserName:</h6> <input class="col-sm-4" type="text" name="user"><p></div>
 				 <div class="form-group"><h6 class="col-sm-2">Password:</h6> <input class="col-sm-4" type="text" name="pass"><p></div>
 				 <input class="btn btn-lg btn-primary" type="submit" name="submit" value="Save">
 				 </form></div>';
   		} else {
-  			echo '<div class = "formContainer"><form action="index.php" method="post" role="form" class="form-horizontal">
-				 <div><input class= "btn btn-lg btn-danger" type="submit" name="submit" value="Delete"/>
-				 <input class= "btn btn-lg btn-success" type="submit" name="submit" value="Extract Mails"/></div>
+  			echo '<div class = "formContainer"><form action="index.php" method="post" role="form-vertical">
+				 <input class= "btn btn-lg btn-danger" type="submit" name="submit" value="Delete"/>
+				 <input class= "btn btn-lg btn-success" type="submit" name="submit" value="Extract Mails"/>
+                 <a class= "btn btn-lg btn-success" href="showExtractedMails.php">View Extracted Mails</a></div>
 				 </form></div>';
   		}
-		
+
 
   		function put_ini_file($file, $array, $i = 0){
 		  $str="";
@@ -64,9 +65,9 @@
 		    }else
 		      $str.=str_repeat(" ",$i*2)."$k = $v\r\n";
 		  }
-		  
+
 		  $phpstr = "<?PHP\r\n\r\n".$str."\r\n?>";
-		  
+
 		  if($file)
 		    return file_put_contents($file,$phpstr);
 		  else

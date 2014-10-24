@@ -1,9 +1,9 @@
 <?PHP
 
 [database]
-  name = test
-  host = localhost
-  user = root
-  pass = titans
+  name = 
+  host = 
+  user = 
+  pass = 
 
 ?>
