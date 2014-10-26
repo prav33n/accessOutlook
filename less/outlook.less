@@ -4,7 +4,27 @@ body {
 	float: none;
 }
 
-.formContainer {
-    padding: 15px;
+.centerDiv {
+	position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+.centerDiv:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.centerDiv > .formContainer {
+	padding: 15px;
 	padding-top: 30px;
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    text-align: center;
 }

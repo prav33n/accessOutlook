@@ -17,6 +17,7 @@
     <link href="css/outlook.css" rel="stylesheet">
   </head>
   <body>
+  	<div class="centerDiv">
   	<?php
   		if(count($_POST)>0) {
   			//var_dump($_POST);
@@ -44,10 +45,10 @@
   			&& $settings['database']['user'] == ''
   			&& $settings['database']['pass'] == '') {
   			echo '<div class = "formContainer"><form action="index.php" method="post" role="form" class="form-horizontal" >
-				 <div class="form-group"><h6 class="col-sm-2">Database Name:</h6><input class="col-sm-4" type="text" name="name"><p></div>
-				 <div class="form-group"><h6 class="col-sm-2">Host:</h6> <input class="col-sm-4" type="text" name="host" text="localhost"><p></div>
-				 <div class="form-group"><h6 class="col-sm-2">UserName:</h6> <input class="col-sm-4" type="text" name="user"><p></div>
-				 <div class="form-group"><h6 class="col-sm-2">Password:</h6> <input class="col-sm-4" type="text" name="pass"><p></div>
+				 <div class="form-group"><h6 class="col-sm-4">Database Name:</h6><input class="col-sm-8" type="text" name="name"><p></div>
+				 <div class="form-group"><h6 class="col-sm-4">Host:</h6> <input class="col-sm-8" type="text" name="host" text="localhost"><p></div>
+				 <div class="form-group"><h6 class="col-sm-4">UserName:</h6> <input class="col-sm-8" type="text" name="user"><p></div>
+				 <div class="form-group"><h6 class="col-sm-4">Password:</h6> <input class="col-sm-8" type="text" name="pass"><p></div>
 				 <input class="btn btn-lg btn-primary" type="submit" name="submit" value="Save">
 				 </form></div>';
   		} else {
@@ -91,5 +92,6 @@
 			}
 		}
 	?>
+	</div>
   </body>
 </html>

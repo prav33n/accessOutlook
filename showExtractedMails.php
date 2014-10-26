@@ -1,11 +1,13 @@
 <?php
   require("OutLook.php");
   require("db.php");
+  set_time_limit (0);
 ?>
 
 <html lang="en">
   <head>
     <title>Outlook Mail view</title>
+    <meta charset="UTF-8">
     <!-- Loading Flat UI -->
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/flat-ui.css" rel="stylesheet">
