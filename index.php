@@ -18,6 +18,7 @@
   </head>
   <body>
   	<div class="centerDiv">
+  	<div class = "formContainer">
   	<?php
   		if(count($_POST)>0) {
   			//var_dump($_POST);
@@ -29,7 +30,11 @@
   				put_ini_file('config.php',$iniVal);
   				$outlook->emptyDataBase();
   			} else if($_POST['submit'] == 'Extract Mails') {
-				ExtractEmailInbox (true);
+  				try{
+  					ExtractEmailInbox (true);
+  				} catch (Exception $e) {
+  					echo '<div>'.$e->getMessage().'</div>';
+  				}
   			}else if($_POST['submit'] == 'Save') {
   				$iniVal['database']['name'] = $_POST['name'];
   				$iniVal['database']['host'] = $_POST['host'];
@@ -44,19 +49,19 @@
   			&& $settings['database']['host'] == ''
   			&& $settings['database']['user'] == ''
   			&& $settings['database']['pass'] == '') {
-  			echo '<div class = "formContainer"><form action="index.php" method="post" role="form" class="form-horizontal" >
+  			echo '<form action="index.php" method="post" role="form" class="form-horizontal" >
 				 <div class="form-group"><h6 class="col-sm-4">Database Name:</h6><input class="col-sm-8" type="text" name="name"><p></div>
 				 <div class="form-group"><h6 class="col-sm-4">Host:</h6> <input class="col-sm-8" type="text" name="host" text="localhost"><p></div>
 				 <div class="form-group"><h6 class="col-sm-4">UserName:</h6> <input class="col-sm-8" type="text" name="user"><p></div>
 				 <div class="form-group"><h6 class="col-sm-4">Password:</h6> <input class="col-sm-8" type="text" name="pass"><p></div>
 				 <input class="btn btn-lg btn-primary" type="submit" name="submit" value="Save">
-				 </form></div>';
+				 </form>';
   		} else {
-  			echo '<div class = "formContainer"><form action="index.php" method="post" role="form-vertical">
+  			echo '<form action="index.php" method="post" role="form-vertical">
 				 <input class= "btn btn-lg btn-danger" type="submit" name="submit" value="Delete"/>
 				 <input class= "btn btn-lg btn-success" type="submit" name="submit" value="Extract Mails"/>
                  <a class= "btn btn-lg btn-success" href="showExtractedMails.php">View Extracted Mails</a></div>
-				 </form></div>';
+				 </form>';
   		}
 
 
@@ -79,19 +84,20 @@
 		}
 
 		function ExtractEmailInbox ($dbcreateflag) {
-			echo 'Loading mail to database, Please wait....<br>';
+			echo '<div>Loading mail to database, Please wait....</div>';
 			$db = new db;
 			if($db->connectStatus) {
 				$db->db_schema_setup();
 				$class = new OutLook;
 				$class->getMessages('Inbox');
 				$class->getContacts();
-				echo 'Loading complete.<br>';
+				echo '<div>Loading complete.<br></div>';
 			} else {
-				echo 'Database connection error <br> enter the right credentials';
+				echo '<div>Database connection error <br> enter the right credentials</div>';
 			}
 		}
 	?>
+	</div>
 	</div>
   </body>
 </html>
