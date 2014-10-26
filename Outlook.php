@@ -171,12 +171,12 @@ class OutLook{
 			$timeres=$item->ReceivedTime;
 
 			try {
-			    $emailObject->senderName =  htmlspecialchars ($item->SenderName,ENT_QUOTES,'UTF-8',true);
-				$emailObject->senderEmail = htmlspecialchars ($item->SenderEmailAddress,ENT_QUOTES,'UTF-8',true);
-				$emailObject->cc = method_exists($item, 'Cc') ? htmlspecialchars ($item->Cc,ENT_QUOTES,'UTF-8',true) : 'no cc' ;
-				$emailObject->bcc = method_exists($item, 'Bcc') ? htmlspecialchars ($item->Bcc,ENT_QUOTES,'UTF-8',true) : 'no cc';
+			    $emailObject->senderName =  mysql_escape_string ($item->SenderName);
+				$emailObject->senderEmail = mysql_escape_string ($item->SenderEmailAddress);
+				$emailObject->cc = method_exists($item, 'Cc') ? mysql_escape_string ($item->Cc) : 'no cc' ;
+				$emailObject->bcc = method_exists($item, 'Bcc') ? mysql_escape_string ($item->Bcc) : 'no cc';
 				//$htmlEncode = htmlspecialchars ($item->Subject,ENT_QUOTES,'UTF-8',true);
-				$emailObject->subject = htmlspecialchars ($item->Subject,ENT_QUOTES,'UTF-8',true);
+				$emailObject->subject = mysql_escape_string ($item->Subject);
 				$htmlEncode = method_exists($item, 'HTMLBody') && $item->HTMLBody() !== "" ? $item->HTMLBody() : (method_exists($item, 'Body') ? $item->Body() : 'no body text');
 				//$htmlEncode = preg_replace('/\'/', ' ', $htmlEncode);
 
@@ -245,6 +245,13 @@ class OutLook{
 		and <a href=comunread.php?folder=Outbox>Outbox(<font color=red>$out_unr</font>)</a></font>";
 	}
 
+	function emptyDataBase() {
+		$sql = 'TRUNCATE email';
+		$this->db->db_query($sql);
+
+		$sql = 'TRUNCATE contacts';
+		$this->db->db_query($sql);
+	}
 //end of classs
 }
 ?>

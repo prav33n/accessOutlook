@@ -5,6 +5,8 @@
 	error_reporting(E_ERROR | E_PARSE);
 	require("OutLook.php");
 	require("db.php");
+	$db = new db;
+	$outlook = new Outlook;
 ?>
 <html lang="en">
   <head>
@@ -24,6 +26,7 @@
   				$iniVal['database']['user'] = '';
   				$iniVal['database']['pass'] = '';
   				put_ini_file('config.php',$iniVal);
+  				$outlook->emptyDataBase();
   			} else if($_POST['submit'] == 'Extract Mails') {
 				ExtractEmailInbox (true);
   			}else if($_POST['submit'] == 'Save') {
@@ -76,18 +79,15 @@
 
 		function ExtractEmailInbox ($dbcreateflag) {
 			echo 'Loading mail to database, Please wait....<br>';
-			sleep(1);
-			if (true) {
-				$db = new db;
-				if($db->connectStatus) {
-					$db->db_schema_setup();
-					$class = new OutLook;
-					$class->getMessages('Inbox');
-					$class->getContacts();
-					echo 'Loading complete.<br>';
-				} else {
-					echo 'Database connection error <br> enter the right credentials';
-				}
+			$db = new db;
+			if($db->connectStatus) {
+				$db->db_schema_setup();
+				$class = new OutLook;
+				$class->getMessages('Inbox');
+				$class->getContacts();
+				echo 'Loading complete.<br>';
+			} else {
+				echo 'Database connection error <br> enter the right credentials';
 			}
 		}
 	?>

@@ -1,9 +1,9 @@
 <?PHP
 
 [database]
-  name = 
-  host = 
-  user = 
-  pass = 
+  name = outlook
+  host = localhost
+  user = root
+  pass = titans
 
 ?>
